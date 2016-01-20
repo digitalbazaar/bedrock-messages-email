@@ -1,0 +1,40 @@
+{
+  "name": "bedrock-messages-email",
+  "version": "0.0.0-dev",
+  "description": "Bedrock messages email module",
+  "main": "./lib/email",
+  "scripts": {
+    "test": "node bedrock/test.js test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/digitalbazaar/bedrock-messages-email"
+  },
+  "keywords": [
+    "bedrock",
+    "messages",
+    "email"
+  ],
+  "author": {
+    "name": "Digital Bazaar, Inc.",
+    "email": "support@digitalbazaar.com",
+    "url": "http://digitalbazaar.com"
+  },
+  "bugs": {
+    "url": "https://github.com/digitalbazaar/bedrock-messages-email/issues"
+  },
+  "homepage": "https://github.com/digitalbazaar/bedrock-messages-email",
+  "dependencies": {
+    "async": "^1.5.1",
+    "lodash": "^3.10.1",
+    "node-uuid": "^1.4.7",
+    "request": "^2.67.0"
+  },
+  "peerDependencies": {
+    "bedrock": "^1.0.0",
+    "bedrock-messages-push": "^1.0.0"
+  },
+  "directories": {
+    "lib": "./lib"
+  }
+}
