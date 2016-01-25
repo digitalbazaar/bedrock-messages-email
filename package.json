@@ -1,6 +1,6 @@
 {
   "name": "bedrock-messages-email",
-  "version": "0.0.0-dev",
+  "version": "0.1.0-dev",
   "description": "Bedrock messages email module",
   "main": "./lib/email",
   "scripts": {
@@ -28,11 +28,15 @@
     "async": "^1.5.1",
     "lodash": "^3.10.1",
     "node-uuid": "^1.4.7",
-    "request": "^2.67.0"
+    "request": "^2.67.0",
+    "bedrock": "^1.0.0",
+    "bedrock-messages-push": "digitalbazaar/bedrock-messages-push#notifications",
+    "bedrock-notifications": "digitalbazaar/bedrock-notifications#master"
   },
   "peerDependencies": {
     "bedrock": "^1.0.0",
-    "bedrock-messages-push": "^1.0.0"
+    "bedrock-messages-push": "digitalbazaar/bedrock-messages-push#notifications",
+    "bedrock-notifications": "digitalbazaar/bedrock-notifications#master"
   },
   "directories": {
     "lib": "./lib"
