@@ -27,7 +27,7 @@ var uuid = require('node-uuid').v4;
 var store = database.collections.messagesPush;
 var userSettings = database.collections.messagesPushUserSettings;
 
-describe('bedrock-messages-email API', function() {
+describe.only('bedrock-messages-email API', function() {
   describe('process function', function() {
     var recipient = mockData.identities.rsa4096.identity.id;
     var message = null;
@@ -320,7 +320,168 @@ describe('bedrock-messages-email API', function() {
         }]
       }, done);
     });
+    it('push daily email job, remove the recipient identity, and process it', function(done) {
+      async.auto({
+        getIdentity: function(callback) {
+          brIdentity.get(null, recipient, callback);
+        },
+        set: ['getIdentity', function(callback, results) {
+          var o = {
+            id: recipient,
+            email: {
+              enable: true,
+              interval: 'daily'
+            },
+            sms: {
+              enable: false,
+              interval: 'daily'
+            }
+          };
+          brPushMessages._updateSettings(results.getIdentity[0], o, callback);
+        }],
+        push: ['set', function(callback) {
+          brPushMessages.queue.add(message, callback);
+        }],
+        removeIdentity: ['push', function(callback) {
+          helpers.removeCollections({collections: ['identity']}, callback);
+        }],
+        process: ['removeIdentity', function(callback, results) {
+          var options = {
+            method: 'email',
+            interval: 'daily'
+          };
+          brMessagesEmail.process(options, callback);
+        }],
+        testResults: ['process', function(callback, results) {
+          should.exist(results.process.remove);
+          should.exist(results.process.remove.ok);
+          results.process.remove.ok.should.equal(1);
 
+          callback();
+        }],
+        checkDatabase: ['testResults', function(callback, results) {
+          store.find({id: database.hash(recipient)}).toArray(callback);
+        }],
+        testDatabase: ['checkDatabase', function(callback, results) {
+          // Job should be gone from the queue even though .process failed
+          results.checkDatabase.should.be.an('array');
+          results.checkDatabase.should.be.length(0);
+          callback();
+        }]
+      }, done);
+    });
+    it('push two email jobs for two different recipients, remove a recipient, process', function(done) {
+      var recipient2 = mockData.identities.rsa2048.identity.id;
+      var message2 = null;
+      async.auto({
+        secondMessage: function(callback) {
+          var body = uuid();
+          var holder = uuid();
+          var link = uuid();
+          var sender = uuid();
+          var subject = uuid();
+          var type = uuid();
+          message2 = helpers.createMessage({
+            body: body,
+            holder: holder,
+            link: link,
+            recipient: recipient2,
+            sender: sender,
+            subject: subject,
+            type: type
+          });
+          brMessages.store(message2, callback);
+        },
+        getIdentity: function(callback) {
+          brIdentity.get(null, recipient, callback);
+        },
+        getSecondIdentity: function(callback) {
+          brIdentity.get(null, recipient2, callback);
+        },
+        set: ['getIdentity', function(callback, results) {
+          var o = {
+            id: recipient,
+            email: {
+              enable: true,
+              interval: 'daily'
+            },
+            sms: {
+              enable: false,
+              interval: 'daily'
+            }
+          };
+          brPushMessages._updateSettings(results.getIdentity[0], o, callback);
+        }],
+        set2: ['getSecondIdentity', function(callback, results) {
+          var o = {
+            id: recipient2,
+            email: {
+              enable: true,
+              interval: 'daily'
+            },
+            sms: {
+              enable: false,
+              interval: 'daily'
+            }
+          };
+          brPushMessages._updateSettings(results.getSecondIdentity[0], o, callback);
+        }],
+        push: ['set', function(callback) {
+          brPushMessages.queue.add(message, callback);
+        }],
+        push2: ['set2', 'secondMessage', function(callback) {
+          brPushMessages.queue.add(message2, callback);
+        }],
+        removeIdentity: ['push', 'push2', function(callback) {
+          helpers.removeIdentity(recipient, callback);
+        }],
+        process: ['push', 'push2', function(callback, results) {
+          var options = {
+            method: 'email',
+            interval: 'daily'
+          };
+          brMessagesEmail.process(options, callback);
+        }],
+        email: ['push', function(callback, results) {
+          bedrock.events.on('myProject.emailMessageEvent', function(data) {
+            // Test will time out if brMessagesEmail.process() does not
+            // emit its events properly.
+            callback(null, data);
+          });
+        }],
+        testResults: ['process', 'email', function(callback, results) {
+          should.exist(results.email.type);
+          should.exist(results.email.details);
+          should.exist(results.email.details.messages);
+          should.exist(results.email.details.identity);
+          results.email.details.messages.should.be.an('array');
+          results.email.details.identity.should.be.an('object');
+          results.email.type.should.be.a('string');
+          results.email.details.messages.should.be.length(1);
+
+          callback(null, results);
+        }],
+        checkDatabase: ['testResults', function(callback, results) {
+          store.find({id: database.hash(recipient)}).toArray(callback);
+        }],
+        testDatabase: ['checkDatabase', function(callback, results) {
+          // Job should no longer exist because we killed its recipient
+          results.checkDatabase.should.be.an('array');
+          results.checkDatabase.should.be.length(0);
+
+          callback();
+        }],
+        checkDatabase2: ['testResults', function(callback, results) {
+          store.find({id: database.hash(recipient2)}).toArray(callback);
+        }],
+        testDatabase2: ['checkDatabase2', function(callback, results) {
+          results.checkDatabase2.should.be.an('array');
+          results.checkDatabase2.should.be.length(0);
+
+          callback();
+        }]
+      }, done);
+    });
   });
 
 });

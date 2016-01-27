@@ -130,6 +130,17 @@ api.removeCollections = function(options, callback) {
   });
 };
 
+api.removeIdentity = function(identity, callback) {
+  // TODO: If brIdentity ever supports .remove in its API, use that instead.
+  var identityCollection = 'identity';
+  database.openCollections([identityCollection], function(err) {
+    var record = {id: database.hash(identity)};
+    database.collections[identityCollection].remove(record, function(err, results) {
+      callback(err, results);
+    });
+  });
+};
+
 // Insert identities and public keys used for testing into database
 function insertTestData(mockData, callback) {
   async.forEachOf(mockData.identities, function(identity, key, callback) {
