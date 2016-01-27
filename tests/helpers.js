@@ -135,8 +135,6 @@ function insertTestData(mockData, callback) {
   async.forEachOf(mockData.identities, function(identity, key, callback) {
     async.parallel([
       function(callback) {
-        console.log("$$$$$INSERTING IDENTITY");
-        console.log(identity.identity);
         brIdentity.insert(null, identity.identity, callback);
       },
       function(callback) {
