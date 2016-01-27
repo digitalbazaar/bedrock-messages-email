@@ -27,7 +27,7 @@ var uuid = require('node-uuid').v4;
 var store = database.collections.messagesPush;
 var userSettings = database.collections.messagesPushUserSettings;
 
-describe.only('bedrock-messages-email API', function() {
+describe('bedrock-messages-email API', function() {
   describe('process function', function() {
     var recipient = mockData.identities.rsa4096.identity.id;
     var message = null;
