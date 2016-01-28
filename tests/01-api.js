@@ -27,6 +27,8 @@ var uuid = require('node-uuid').v4;
 var store = database.collections.messagesPush;
 var userSettings = database.collections.messagesPushUserSettings;
 
+var messageEmailEventType = config['messages-email'].emailEventType;
+
 describe('bedrock-messages-email API', function() {
   describe('process function', function() {
     var recipient = mockData.identities.rsa4096.identity.id;
@@ -89,7 +91,7 @@ describe('bedrock-messages-email API', function() {
           brMessagesEmail.process(options, callback);
         }],
         email: ['push', function(callback, results) {
-          bedrock.events.on('myProject.emailMessageEvent', function(data) {
+          bedrock.events.on(messageEmailEventType, function(data) {
             // Test will time out if brMessagesEmail.process() does not
             // emit its event properly
             callback(null, data);
@@ -151,7 +153,7 @@ describe('bedrock-messages-email API', function() {
           brMessagesEmail.process(options, callback);
         }],
         email: ['push', function(callback, results) {
-          bedrock.events.on('myProject.emailMessageEvent', function(data) {
+          bedrock.events.on(messageEmailEventType, function(data) {
             // Test will time out if brMessagesEmail.process() does not
             // emit its event properly
             callback(null, data);
@@ -264,7 +266,7 @@ describe('bedrock-messages-email API', function() {
         email: ['push', function(callback, results) {
           var eventsReceived = 0;
           var r = {};
-          bedrock.events.on('myProject.emailMessageEvent', function(data) {
+          bedrock.events.on(messageEmailEventType, function(data) {
             // Test will time out if brMessagesEmail.process() does not
             // emit its events properly.
             // Because there are two jobs for two diff recipients pushed, we
@@ -443,7 +445,7 @@ describe('bedrock-messages-email API', function() {
           brMessagesEmail.process(options, callback);
         }],
         email: ['push', function(callback, results) {
-          bedrock.events.on('myProject.emailMessageEvent', function(data) {
+          bedrock.events.on(messageEmailEventType, function(data) {
             // Test will time out if brMessagesEmail.process() does not
             // emit its events properly.
             callback(null, data);
