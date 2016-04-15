@@ -30,12 +30,12 @@
     "node-uuid": "^1.4.7",
     "request": "^2.67.0",
     "bedrock": "^1.0.0",
-    "bedrock-messages-push": "digitalbazaar/bedrock-messages-push#notifications",
+    "bedrock-messages-push": "digitalbazaar/bedrock-messages-push#master",
     "bedrock-notifications": "digitalbazaar/bedrock-notifications#master"
   },
   "peerDependencies": {
     "bedrock": "^1.0.0",
-    "bedrock-messages-push": "digitalbazaar/bedrock-messages-push#notifications",
+    "bedrock-messages-push": "digitalbazaar/bedrock-messages-push#master",
     "bedrock-notifications": "digitalbazaar/bedrock-notifications#master"
   },
   "directories": {
