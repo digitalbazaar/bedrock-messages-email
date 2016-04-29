@@ -32,8 +32,8 @@
   },
   "peerDependencies": {
     "bedrock": "^1.0.0",
-    "bedrock-messages-push": "digitalbazaar/bedrock-messages-push#master",
-    "bedrock-notifications": "digitalbazaar/bedrock-notifications#master"
+    "bedrock-messages-push": "^0.1.0",
+    "bedrock-notifications": "^0.1.0"
   },
   "directories": {
     "lib": "./lib"
