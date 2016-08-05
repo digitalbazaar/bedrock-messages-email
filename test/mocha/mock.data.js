@@ -1,7 +1,7 @@
 /*
- * Copyright (c) 2015 Digital Bazaar, Inc. All rights reserved.
+ * Copyright (c) 2015-2016 Digital Bazaar, Inc. All rights reserved.
  */
- /* jshint node: true */
+/* jshint node: true */
 
 'use strict';
 
@@ -13,7 +13,7 @@ module.exports = data;
 var identities = {};
 data.identities = identities;
 
-// user with a valid 4096 bit RSA keypair and issuer permissions
+// user with a valid 4096 bit RSA keypair
 var userName = 'rsa4096';
 identities[userName] = {};
 identities[userName].identity = helpers.createIdentity(userName);

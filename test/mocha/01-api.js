@@ -1,13 +1,8 @@
 /*
  * Copyright (c) 2016 Digital Bazaar, Inc. All rights reserved.
  */
-
-/*
- * Copyright (c) 2016 Digital Bazaar, Inc. All rights reserved.
- */
 /* globals describe, before, after, it, should, beforeEach, afterEach */
-/* jshint node: true */
-/* jshint -W030 */
+/* jshint node: true, -W030 */
 
 'use strict';
 
@@ -23,7 +18,7 @@ var config = bedrock.config;
 var database = require('bedrock-mongodb');
 var helpers = require('./helpers');
 var mockData = require('./mock.data');
-var uuid = require('node-uuid').v4;
+var uuid = require('uuid').v4;
 
 var store = database.collections.messagesPush;
 var userSettings = database.collections.messagesPushUserSettings;
@@ -40,10 +35,10 @@ describe('bedrock-messages-email API', function() {
       brNotifications._unregister(brMessagesEmail);
       brNotifications._setDebugTesting();
       async.auto({
-        prepare: [function(callback) {
+        prepare: function(callback) {
           helpers.prepareDatabase(mockData, callback);
-        }],
-        store: [function(callback) {
+        },
+        store: ['prepare', function(callback) {
           var body = uuid();
           var holder = uuid();
           var link = uuid();
@@ -59,7 +54,7 @@ describe('bedrock-messages-email API', function() {
             subject: subject,
             type: type
           });
-          brMessages.store(message, done);
+          brMessages.store(message, callback);
         }]
       }, done);
     });
@@ -119,7 +114,9 @@ describe('bedrock-messages-email API', function() {
           callback(null, results.email);
         }],
         checkDatabase: ['testResults', function(callback, results) {
-          store.find({id: database.hash(results.testResults.details.identity.id)}).toArray(callback);
+          store.find({
+            id: database.hash(results.testResults.details.identity.id)
+          }).toArray(callback);
         }],
         testDatabase: ['checkDatabase', function(callback, results) {
           results.checkDatabase.should.be.an('array');
@@ -128,7 +125,8 @@ describe('bedrock-messages-email API', function() {
         }]
       }, done);
     });
-    it('push one daily email and one daily sms job, process only email', function(done) {
+    it('push one daily email and one daily sms job, process only email',
+      function(done) {
       async.auto({
         getIdentity: function(callback) {
           brIdentity.get(null, recipient, callback);
@@ -181,7 +179,9 @@ describe('bedrock-messages-email API', function() {
           callback(null, results.email);
         }],
         checkDatabase: ['testResults', function(callback, results) {
-          store.find({id: database.hash(results.testResults.details.identity.id)}).toArray(callback);
+          store.find({
+            id: database.hash(results.testResults.details.identity.id)
+          }).toArray(callback);
         }],
         testDatabase: ['checkDatabase', function(callback, results) {
           // An SMS job should still exist
@@ -253,7 +253,8 @@ describe('bedrock-messages-email API', function() {
               interval: 'daily'
             }
           };
-          brNotifications._updateSettings(results.getSecondIdentity[0], o, callback);
+          brNotifications._updateSettings(
+            results.getSecondIdentity[0], o, callback);
         }],
         push: ['set', function(callback) {
           brPushMessages.queue.add(message, callback);
@@ -327,7 +328,8 @@ describe('bedrock-messages-email API', function() {
         }]
       }, done);
     });
-    it('push daily email job, remove the recipient identity, and process it', function(done) {
+    it('push daily email job, remove the recipient identity, and process it',
+      function(done) {
       async.auto({
         getIdentity: function(callback) {
           brIdentity.get(null, recipient, callback);
@@ -377,7 +379,8 @@ describe('bedrock-messages-email API', function() {
         }]
       }, done);
     });
-    it('push two email jobs for two different recipients, remove a recipient, process', function(done) {
+    it('push two email jobs for two recipients, remove a recipient, process',
+      function(done) {
       var recipient2 = mockData.identities.rsa2048.identity.id;
       var message2 = null;
       async.auto({
@@ -431,7 +434,8 @@ describe('bedrock-messages-email API', function() {
               interval: 'daily'
             }
           };
-          brNotifications._updateSettings(results.getSecondIdentity[0], o, callback);
+          brNotifications._updateSettings(
+            results.getSecondIdentity[0], o, callback);
         }],
         push: ['set', function(callback) {
           brPushMessages.queue.add(message, callback);

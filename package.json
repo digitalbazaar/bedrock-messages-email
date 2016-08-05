@@ -2,9 +2,9 @@
   "name": "bedrock-messages-email",
   "version": "0.1.1-dev",
   "description": "Bedrock messages email module",
-  "main": "./lib/email",
+  "main": "./lib",
   "scripts": {
-    "test": "node bedrock/test.js test"
+    "test": "node test/test.js test"
   },
   "repository": {
     "type": "git",
@@ -27,12 +27,16 @@
   "dependencies": {
     "async": "^1.5.1",
     "lodash": "^4.0.0",
-    "node-uuid": "^1.4.7",
-    "request": "^2.67.0"
+    "request": "^2.67.0",
+    "uuid": "^2.0.2"
   },
   "peerDependencies": {
     "bedrock": "^1.0.0",
+    "bedrock-identity": "^4.2.0",
+    "bedrock-mail": "^2.0.0",
+    "bedrock-messages": "^0.1.0",
     "bedrock-messages-push": "^0.1.0",
+    "bedrock-mongodb": "^3.0.0",
     "bedrock-notifications": "^0.1.0"
   },
   "directories": {
